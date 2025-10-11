@@ -1,0 +1,49 @@
+body {
+  background-color: #b5f1b5;
+  font-family: 'Rethink Sans', sans-serif;
+  font-weight: 400;
+  margin: 2%;
+}
+
+
+nav {
+  list-style-type: none;
+  margin: 20px;
+  padding: 0;
+  overflow: hidden;
+}
+
+nav li#home{
+  float: left;
+}
+
+nav li#home a{
+  font-size:larger;
+  font-weight: bold;
+  color: rgb(12, 70, 12);;
+}
+
+nav li.sign {
+  float: right;
+}
+
+nav li a {
+  display: block;
+  color: white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+button {
+  background-color: rgb(12, 70, 12);
+  color: white;
+  border: none;
+  padding: 14px 16px;
+  border-radius: 52px;
+}
+
+button:hover {
+  background-color: white;
+  color: rgb(12, 70, 12);
+}
