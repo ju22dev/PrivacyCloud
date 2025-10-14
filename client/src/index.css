@@ -23,6 +23,12 @@ nav li#home a{
   color: rgb(12, 70, 12);;
 }
 
+nav li#signup button{
+  color: rgb(12, 70, 12);
+  background-color: #b5f1b5;
+}
+
+
 nav li.sign {
   float: right;
 }
@@ -39,11 +45,39 @@ button {
   background-color: rgb(12, 70, 12);
   color: white;
   border: none;
-  padding: 14px 16px;
+  padding: 10px 16px;
   border-radius: 52px;
+  margin: 1px;
 }
 
 button:hover {
   background-color: white;
   color: rgb(12, 70, 12);
+}
+
+p#motto {
+  font-size: 300%;
+  font-weight: 600;
+  color: rgb(12, 70, 12);
+}
+
+img {
+  height: 20em;
+  width: 20em;
+}
+
+.showcase {
+  float: left;
+  width: 100%;
+}
+
+.showcase img {
+  width: 40%;
+  
+  display: block;
+}
+
+.showcase p {
+  width: 60%;
+  display: block;
 }

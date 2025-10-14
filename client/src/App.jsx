@@ -57,18 +57,22 @@ function App() {
             <nav>
                 <li id='home'><a href="#">Privacy Cloud</a></li>
                 <li className='sign'><button>Log In</button></li>
-                <li className='sign'><a href="#">Sign Up</a></li>
+                <li className='sign' id='signup'><button>Sign Up</button></li>
                 
             </nav>
             <br /><br /><br />
+            <div className="showcase">
+                <p id="motto">A Cloud Storage That Respects Your Privacy.</p>
+                <img src="/cloud_lock.svg" alt="s" />
+            </div>
             <div>
-            <form onSubmit={textSubmit}>
-                <label htmlFor="fname">First name:</label><br></br>
-                <input type="text" id="fname" name="fname" value={fname} onChange={(e) => setFname(e.target.value)}></input><br></br>
-                <label htmlFor="lname">Last name:</label><br></br>
-                <input type="text" id="lname" name="lname" value={lname} onChange={(e) => setLname(e.target.value)}></input><br></br><br></br>
-                <button type="submit">Submit</button>
-            </form>
+                <form onSubmit={textSubmit}>
+                    <label htmlFor="fname">First name:</label><br></br>
+                    <input type="text" id="fname" name="fname" value={fname} onChange={(e) => setFname(e.target.value)}></input><br></br>
+                    <label htmlFor="lname">Last name:</label><br></br>
+                    <input type="text" id="lname" name="lname" value={lname} onChange={(e) => setLname(e.target.value)}></input><br></br><br></br>
+                    <button type="submit">Submit</button>
+                </form>
             </div>
 
             <div>
