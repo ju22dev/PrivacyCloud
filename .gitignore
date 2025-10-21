@@ -27,5 +27,5 @@ uploads
 left-overs
 
 plan.txt
-
-
+.env
+*.rest
