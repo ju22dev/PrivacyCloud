@@ -25,7 +25,7 @@ model StoredData {
 
 model MetaData {
   id       Int    @id @default(autoincrement())
-  data     String
+  dataName String
   userId   Int
   user     User   @relation(fields: [userId], references: [id])
 }
