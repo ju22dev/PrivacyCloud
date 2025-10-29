@@ -16,28 +16,48 @@ const upload = multer({ storage: storage })
 const router = express.Router()
 
 router.post("/upload", upload.single('file'), async (req, res) => {
-    const dataName = req.file.originalname;
-    const userId = 0 // FIXME() : HOW CAN I GET THIS ID WITHOUT EXPOSING THE ID 
-    console.log(dataName + " uploaded successfully!")
+    try {
+        const dataName = req.file.originalname;
+        const userId = req.userId
+        console.log(dataName + " uploaded successfully!")
 
-    await prisma.storedData.create({
-        data: {
-                dataName,
-                userId
+        await prisma.storeddata.create({
+            data: {
+                dataName: dataName,
+                user: {
+                    connect: {
+                        id: userId
+                    }
+                }
             }
-    })
+        })
 
-    res.send(dataName + " uploaded successfully!")
+        res.send(dataName + " uploaded successfully!")
+    } catch (e) {
+        console.log(e.message)
+    }
 });
 
-router.get("/download", express.static("./uploads"), (req, res) => {
-    // get all of the specific user's data from the storeddata table then
-    //      - check if the requested file is actually the user's
-    //      - then allow the user to get the file
-    // get the data
-    // but i think i gotta know the req comes from the owner
-    // we can identify the user using the session token instead of their actual cred for extra measure???
-    // lets worry about this later, for now lets just make sure that the route is serving data of its users properly
+router.get("/download", express.static("./uploads"), async (req, res) => {
+    try {
+        const user = await prisma.user.findMany({
+            include: { stored: true },
+            where: {
+                id: req.userId // id is decoded from the jwt during authMiddleware
+            }
+        })
+
+        const userData = user[0].stored.map(x => `http://localhost:5000/data/download/${x.dataName}`)
+
+
+
+        res.send({
+            "userData": userData.length > 0 ? userData : "Your cloud storage is empty!"
+        })
+    } catch (e) {
+        console.log(e.message)
+    }
+
 })
 
 export default router;
