@@ -1,6 +1,11 @@
 import express from 'express'
 import prisma from '../prismaClient.js'
 import multer from 'multer'
+import path from 'path'
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -23,7 +28,7 @@ router.post("/upload", upload.single('file'), async (req, res) => {
 
         await prisma.storeddata.create({
             data: {
-                dataName: dataName,
+                dataName: dataName.trim(),
                 user: {
                     connect: {
                         id: userId
@@ -38,18 +43,14 @@ router.post("/upload", upload.single('file'), async (req, res) => {
     }
 });
 
-router.get("/download", express.static("./uploads"), async (req, res) => {
+router.get("/download", async (req, res) => {
     try {
         const user = await prisma.user.findMany({
             include: { stored: true },
-            where: {
-                id: req.userId // id is decoded from the jwt during authMiddleware
-            }
+            where: { id: req.userId }
         })
 
         const userData = user[0].stored.map(x => `http://localhost:5000/data/download/${x.dataName}`)
-
-
 
         res.send({
             "userData": userData.length > 0 ? userData : "Your cloud storage is empty!"
@@ -58,6 +59,27 @@ router.get("/download", express.static("./uploads"), async (req, res) => {
         console.log(e.message)
     }
 
+})
+
+router.get("/file/:filename", async (req, res) => {
+    try {
+        const user = await prisma.user.findMany({
+            include: { stored: true },
+            where: { id: req.userId }
+        })
+
+        const userData = user[0].stored.map(x => `/file/${x.dataName}`)
+        if(!userData.includes(req.path))
+            res.status(403).send("No such file was found!")
+            
+        const filePath = path.join(__dirname, "../../uploads", req.params.filename.trim())
+        console.log("Looking for: " + filePath)
+        res.sendFile(filePath);
+
+    } catch(e) {
+        console.log(e.message)
+        res.status(500).send(e.message)
+    }
 })
 
 export default router;
