@@ -50,7 +50,7 @@ router.get("/download", async (req, res) => {
             where: { id: req.userId }
         })
 
-        const userData = user[0].stored.map(x => `http://localhost:5000/data/download/${x.dataName}`)
+        const userData = user[0].stored.map(x => `http://localhost:5000/data/file/${x.dataName}`)
 
         res.send({
             "userData": userData.length > 0 ? userData : "Your cloud storage is empty!"
