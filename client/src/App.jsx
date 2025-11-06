@@ -8,6 +8,7 @@ import {
 import LandingPage from './pages/LandingPage'
 import AuthPage from './pages/AuthPage'
 import NotFoundPage from './pages/NotFoundPage'
+import HomePage from './pages/HomePage'
 
 const router = createBrowserRouter(
     createRoutesFromElements(
@@ -15,6 +16,7 @@ const router = createBrowserRouter(
             <Route index element={<LandingPage />} />
             <Route path="/auth" element={<AuthPage />} />
             <Route path="*" element={<NotFoundPage />} />
+            <Route path="/home" element={<HomePage />} />
         </Route>
     )
 )

@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from "react-router-dom";
 
 function AuthPage() {
     let token = localStorage.getItem('token')
@@ -12,110 +13,16 @@ function AuthPage() {
     const [registerQuestionTxt, setRegisterQuestionTxt] = useState('Don\'t have an account?')
     const [authBtn, setAuthBtn] = useState('Submit')
 
-    let selectedTab = 'All'
-    let todos = []
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+
+    const [error, setError] = useState("");
 
     const apiBase = '/api/'
 
-    // elements
-    const nav = document.querySelector('nav')
-    const header = document.querySelector('header')
-    const main = document.querySelector('main')
-    const navElements = document.querySelectorAll('.tab-button')
-    const authContent = document.getElementById('auth')
-    const textError = document.getElementById('error')
-    const email = document.getElementById('emailInput')
-    const password = document.getElementById('passwordInput')
-    const addTodoBtn = document.getElementById('addTodoBtn')
-    // const deleteBtn = document.getElementById('')
-    // const updateBtn = 
 
-    // PAGE RENDERING LOGIC
-    async function showDashboard() {
-        nav.style.display = 'block'
-        header.style.display = 'flex'
-        main.style.display = 'flex'
-        authContent.style.display = 'none'
+    const navigate = useNavigate();
 
-        await fetchTodos()
-    }
-
-    function updateHeaderText() {
-        const todosLength = todos.length
-        const newString = todos.length === 1 ?
-            `You have 1 open task.` :
-            `You have ${todosLength} open tasks.`
-        header.querySelector('h1').innerText = newString
-    }
-
-    function updateNavCount() {
-        navElements.forEach(ele => {
-            const btnText = ele.innerText.split(' ')[0]
-
-            // filter todos in here
-            const count = todos.filter(val => {
-                if (btnText === 'All') {
-                    return true
-                }
-                return btnText === 'Complete' ?
-                    val.completed :
-                    !val.completed
-            }).length
-
-            // target inside space and update value
-            ele.querySelector('span').innerText = `(${count})`
-        })
-    }
-
-    function changeTab(tab) {
-        selectedTab = tab
-        navElements.forEach(val => {
-            if (val.innerText.includes(tab)) {
-                val.classList.add('selected-tab')
-            } else {
-                val.classList.remove('selected-tab')
-            }
-        })
-        renderTodos()
-    }
-
-    function renderTodos() {
-        // need to add filtering logic in here
-
-        updateNavCount()
-        updateHeaderText()
-
-        let todoList = ``
-        todos.filter(val => {
-            return selectedTab === 'All' ? true : selectedTab === 'Complete' ? val.completed : !val.completed
-        }).forEach((todo, todoIndex) => {
-            const taskIndex = todo.id
-            todoList += `
-            <div class="card todo-item">
-                <p>${todo.task}</p>
-                <div class="todo-buttons">
-                    <button onClick="updateTodo(${taskIndex})" ${todo.completed ? 'disabled' : ''}>
-                        <h6>Done</h6>
-                    </button>
-                    <button onClick="deleteTodo(${taskIndex})">
-                        <h6>Delete</h6>
-                    </button>
-                </div>
-            </div>
-            `
-        })
-        todoList += `
-        <div class="input-container">
-            <input id="todoInput" placeholder="Add task" />
-            <button onClick="addTodo()">
-                <i class="fa-solid fa-plus"></i>
-            </button>
-        </div>
-        `
-        main.innerHTML = todoList
-    }
-
-    // showDashboard()
 
     // AUTH LOGIC
 
@@ -129,8 +36,9 @@ function AuthPage() {
 
     async function authenticate() {
         // access email and pass values
-        const emailVal = email.value
-        const passVal = password.value
+
+        const emailVal = email
+        const passVal = password
 
         // guard clauses... if authenticating, return
         if (
@@ -140,32 +48,36 @@ function AuthPage() {
             !passVal ||
             passVal.length < 6 ||
             !emailVal.includes('@')
-        ) { return }
+        ) {
+            setError("Email or Password is not sufficient!")
+            return
+        }
 
         // reset error and set isAuthenticating to true
-        error.style.display = 'none'
+        setError(" ")
         setIsAuthenticating(true)
-        
+
         setAuthBtn('Authenticating...')
 
         try {
             let data
             if (isRegistration) {
                 // register an account
-                const response = await fetch(apiBase + 'auth/register', {
+                const response = await fetch('http://localhost:5000/auth/register', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username: emailVal, password: passVal })
+                    body: JSON.stringify({ email: emailVal, password: passVal })
                 })
                 data = await response.json()
             } else {
                 // login an account
-                const response = await fetch(apiBase + 'auth/login', {
+                const response = await fetch('http://localhost:5000/auth/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username: emailVal, password: passVal })
+                    body: JSON.stringify({ email: emailVal, password: passVal })
                 })
-                data = await response.json()
+                data = await response.json();
+                console.log(data)
             }
 
             if (data.token) {
@@ -175,19 +87,17 @@ function AuthPage() {
                 // authenicating into loading
                 setAuthBtn('Loading...')
 
-                // fetch todos
-                await fetchTodos()
-
-                // show dashboard
-                showDashboard()
+                // show home
+                navigate("/home")
             } else {
                 throw Error('❌ Failed to authenticate...')
             }
 
         } catch (err) {
             console.log(err.message)
-            error.innerText = err.message
-            error.style.display = 'block'
+            setError(err.message)
+            console.log("\n")
+            console.log(data)
         } finally {
             setAuthBtn('Submit')
             setIsAuthenticating(false)
@@ -208,9 +118,9 @@ function AuthPage() {
                     <p></p>
                 </div>
 
-                <p id="error" style={{ display: 'none' }}></p>
-                <input id="emailInput" placeholder="Email" />
-                <input id="passwordInput" placeholder="********" type="password" />
+                <p id="error" >{error}</p>
+                <input id="emailInput" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                <input id="passwordInput" placeholder="********" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
                 <button id="authBtn" onClick={() => authenticate()}>
                     {authBtn}
                 </button>
