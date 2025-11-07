@@ -1,53 +1,71 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 function HomePage() {
-  const [downloadLinks, setDownloadLinks] = useState([]);
-  const [errorMessage, setErrorMessage] = useState("");
+    const navigate = useNavigate();
 
-  useEffect(() => {
-    async function dataLoader() {
-      try {
-        const response = await fetch("http://localhost:5000/data/download", {
-          headers: {
-            authorization: localStorage.getItem("token"),
-          },
-        });
+    const [downloadLinks, setDownloadLinks] = useState([]);
+    const [errorMessage, setErrorMessage] = useState("");
 
-        const data = await response.json();
-        console.log(data);
-
-        if (data.message && data.message.includes("Invalid token")) {
-          setErrorMessage("Please log in first!");
-          return;
-        }
-
-        setDownloadLinks(data.userData || []);
-      } catch (err) {
-        console.error(err);
-        setErrorMessage("Error loading data.");
-      }
+    // FIXME: temp solution
+    async function handleOpenFile(link) {
+        const token = localStorage.getItem('token');
+        window.open(`${link}?token=${token}`, '_blank');
     }
 
-    dataLoader();
-  }, []);
 
-  return (
-    <div>
-      <h1>HomePage</h1>
+    useEffect(() => {
+        
+        async function dataLoader() {
+            try {
+                const response = await fetch("http://localhost:5000/data/download", {
+                    headers: {
+                        authorization: localStorage.getItem("token"),
+                    },
+                });
 
-      {errorMessage && <h2>{errorMessage}</h2>}
+                const data = await response.json();
+                console.log(data);
 
-      <ul>
-        {downloadLinks.map((link, i) => (
-          <li key={i}>
-            <a href={link} target="_blank" rel="noopener noreferrer">
-              {link}
-            </a>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
+                if (data.message && data.message.includes("Invalid token")) {
+                    navigate("/auth");
+                    setErrorMessage("Please log in first!");
+                    return;
+                }
+
+                setDownloadLinks(data.userData || []);
+            } catch (err) {
+                console.error(err);
+                setErrorMessage("Error loading data.");
+            }
+        }
+
+        dataLoader();
+        
+    }, []);
+
+    return (
+        <div>
+            <h1>HomePage</h1>
+
+            {errorMessage && <h2>{errorMessage}</h2>}
+
+            <ul>
+                {downloadLinks.map((link, i) => (
+                    <li key={i}>
+                        <a href={""} onClick={()=>handleOpenFile(link)}>
+                            {link}
+                        </a>
+                    </li>
+                ))}
+            </ul>
+
+            <button onClick={() => navigate("/upload")}>
+                + Upload
+            </button>
+        </div>
+    );
+
 }
 
 export default HomePage;

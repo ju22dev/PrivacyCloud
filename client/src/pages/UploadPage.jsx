@@ -1,6 +1,8 @@
-import React from 'react'
+import { useState } from 'react'
 
-function FileSubmit() {
+function UploadPage() {
+
+    // FIXME: auth check before loading the page otherwise navigate to authpage
 
     const [status, setStatus] = useState("");
     const [file, setFile] = useState(null);
@@ -14,11 +16,14 @@ function FileSubmit() {
         }
 
         const formData = new FormData();
-        formData.append("photo", file);
+        formData.append("file", file);
 
         try {
-            const response = await fetch("http://localhost:5000/upload/photo", {
+            const response = await fetch("http://localhost:5000/data/upload", {
                 method: "POST",
+                headers: {
+                    authorization: localStorage.getItem("token") || "",
+                },
                 body: formData
             });
 
@@ -52,4 +57,4 @@ function FileSubmit() {
     )
 }
 
-export default FileSubmit
+export default UploadPage

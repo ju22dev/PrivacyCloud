@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken'
 
 function authMiddleware (req, res, next) {
-    const token = req.header('authorization')
+    const token = req.header('authorization') || req.query.token // FIXME: token temp solution
 
     if(!token) {return res.status(401).json({message: "No token provided!"})}
 

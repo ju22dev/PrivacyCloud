@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from "react-router-dom";
 
 function AuthPage() {
+    const navigate = useNavigate();
     let token = localStorage.getItem('token')
 
     const [isLoading, setIsLoading] = useState(false);
@@ -18,10 +19,6 @@ function AuthPage() {
 
     const [error, setError] = useState("");
 
-    const apiBase = '/api/'
-
-
-    const navigate = useNavigate();
 
 
     // AUTH LOGIC
@@ -35,12 +32,10 @@ function AuthPage() {
     }
 
     async function authenticate() {
-        // access email and pass values
 
         const emailVal = email
         const passVal = password
 
-        // guard clauses... if authenticating, return
         if (
             isLoading ||
             isAuthenticating ||
@@ -53,7 +48,6 @@ function AuthPage() {
             return
         }
 
-        // reset error and set isAuthenticating to true
         setError(" ")
         setIsAuthenticating(true)
 
@@ -62,7 +56,7 @@ function AuthPage() {
         try {
             let data
             if (isRegistration) {
-                // register an account
+                
                 const response = await fetch('http://localhost:5000/auth/register', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -70,7 +64,7 @@ function AuthPage() {
                 })
                 data = await response.json()
             } else {
-                // login an account
+                // login
                 const response = await fetch('http://localhost:5000/auth/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -84,11 +78,10 @@ function AuthPage() {
                 token = data.token
                 localStorage.setItem('token', token)
 
-                // authenicating into loading
                 setAuthBtn('Loading...')
 
-                // show home
                 navigate("/home")
+                
             } else {
                 throw Error('❌ Failed to authenticate...')
             }
