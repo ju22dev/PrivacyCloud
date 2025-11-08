@@ -1,12 +1,12 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom';
 
 function UploadPage() {
-
-    // FIXME: auth check before loading the page otherwise navigate to authpage
+    const navigate = useNavigate();
 
     const [status, setStatus] = useState("");
     const [file, setFile] = useState(null);
-    
+
     async function fileSubmit(e) {
         e.preventDefault();
 
@@ -43,6 +43,34 @@ function UploadPage() {
         }
 
     }
+
+    // FIXME: it will pull some datas needed for the page in the future like space used and stuff
+    useEffect(() => {
+        async function dataLoader() {
+            try {
+                const response = await fetch("http://localhost:5000/data/download", {
+                    headers: {
+                        authorization: localStorage.getItem("token"),
+                    },
+                });
+
+                const data = await response.json();
+                console.log(data);
+
+                if (data.message && data.message.includes("Invalid token")) {
+                    navigate("/auth");
+                    setStatus("Please log in first!");
+                    return;
+                }
+
+            } catch (err) {
+                console.error(err);
+                setStatus("Error loading data.");
+            }
+        }
+
+        dataLoader();
+    }, [])
     return (
 
         <div>
