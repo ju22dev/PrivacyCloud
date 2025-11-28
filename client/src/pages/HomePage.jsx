@@ -50,15 +50,15 @@ function HomePage() {
 
             {errorMessage && <h2>{errorMessage}</h2>}
 
-            <ul>
+            <div className="filesContainer">
                 {downloadLinks.map((link, i) => (
-                    <li key={i}>
-                        <a href={""} onClick={()=>handleOpenFile(link)}>
-                            {link}
-                        </a>
+                    
+                    <li key={i} className="fileElement">
+                        <img src="/icons8-file.svg" alt="" onClick={() => handleOpenFile(link)} />
+                        <p>{link.split("/").at(-1)}</p>
                     </li>
                 ))}
-            </ul>
+            </div>
 
             <button onClick={() => navigate("/upload")}>
                 + Upload

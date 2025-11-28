@@ -81,3 +81,26 @@ img {
   width: 60%;
   display: block;
 }
+
+.filesContainer {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  width: 95%;
+}
+
+.fileElement{
+  width: 10%;
+  list-style: none;
+  margin: 5px;
+  align-items: start;
+}
+
+.fileElement img {
+  width: 100%
+}
+
+.fileElement p {
+  width: 100%;
+}
