@@ -6,6 +6,7 @@ function UploadPage() {
 
     const [status, setStatus] = useState("");
     const [file, setFile] = useState(null);
+    const homeButtonText = "<< Home"
 
     async function fileSubmit(e) {
         e.preventDefault();
@@ -74,6 +75,11 @@ function UploadPage() {
     return (
 
         <div>
+            <div>
+                <button onClick={() => navigate("/home")}>
+                    {homeButtonText}
+                </button>
+            </div>
             <form onSubmit={fileSubmit}>
                 <h2>Upload a File</h2>
                 <input type="file" onChange={(e) => setFile(e.target.files[0])} required />
