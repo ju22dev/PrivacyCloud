@@ -86,21 +86,27 @@ img {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  align-items: center;
-  width: 95%;
-}
-
-.fileElement{
-  width: 10%;
-  list-style: none;
-  margin: 5px;
   align-items: start;
 }
 
+.fileElement{
+  width: 8em;
+  list-style: none;
+  padding: 5px;
+  border-radius: 1em;
+
+}
+
+.fileElement:hover {
+  background-color: rgba(12, 70, 12, 0.288);
+  
+}
+
 .fileElement img {
-  width: 100%
+  width: 8em;
+  height: 10em;
 }
 
 .fileElement p {
-  width: 100%;
+  width: 8em;
 }

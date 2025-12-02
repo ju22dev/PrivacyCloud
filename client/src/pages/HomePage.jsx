@@ -6,6 +6,7 @@ function HomePage() {
 
     const [downloadLinks, setDownloadLinks] = useState([]);
     const [errorMessage, setErrorMessage] = useState("");
+    const [fileName, setFileName] = useState([]);
 
     // FIXME: temp solution
     async function handleOpenFile(link) {
@@ -34,6 +35,9 @@ function HomePage() {
                 }
 
                 setDownloadLinks(data.userData || []);
+                data.userData.map((t, k) => {
+                    setFileName(prev => [...prev, t.split("/").at(-1).slice(0,10)+"\n"+t.split("/").at(-1).slice(10,20)])
+                })
             } catch (err) {
                 console.error(err);
                 setErrorMessage("Error loading data.");
@@ -53,9 +57,10 @@ function HomePage() {
             <div className="filesContainer">
                 {downloadLinks.map((link, i) => (
                     
-                    <li key={i} className="fileElement">
-                        <img src="/icons8-file.svg" alt="" onClick={() => handleOpenFile(link)} />
-                        <p>{link.split("/").at(-1)}</p>
+                    <li key={i} className="fileElement" onClick={() => handleOpenFile(link)}>
+                        <img src="/icons8-file.svg" alt="" />
+                        
+                        <p>{fileName[i]}</p>
                     </li>
                 ))}
             </div>
