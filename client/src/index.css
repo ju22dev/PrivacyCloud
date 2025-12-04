@@ -90,7 +90,7 @@ img {
 }
 
 .fileElement{
-  width: 8em;
+  width: 9em;
   list-style: none;
   padding: 5px;
   border-radius: 1em;
@@ -107,6 +107,50 @@ img {
   height: 10em;
 }
 
-.fileElement p {
+.fileDescription {
   width: 8em;
+  display: inline-flex;
+  
+}
+
+.fileDescription p {
+  margin: 0;
+  width: 6em;
+}
+
+.fileDescription div {
+  width: 2em;
+}
+
+.fileDescription img {
+  width: 2em;
+  height: 2em;
+  border:1px solid #b5f1b5;
+  border-radius: 2em;
+}
+
+.fileDescription img:hover {
+  border:1px solid rgb(12, 70, 12);
+  border-radius: 2em;
+}
+.three-dots {
+   position: relative;
+   width: 5em;
+  }
+.drop-down-options {
+  position: absolute;
+  top: 5;
+  left: 0;
+  width: 5em;
+  border: 1px solid rgb(12, 70, 12);
+}
+
+.drop-down-options li {
+  border: 1px solid rgb(12, 70, 12);
+  background-color: #b5f1b5;
+}
+
+.drop-down-options li:hover {
+  border: 1px solid #b5f1b5;
+  background-color: #b5f1b5;
 }

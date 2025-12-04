@@ -50,7 +50,7 @@ router.get("/download", async (req, res) => {
             where: { id: req.userId }
         })
 
-        const userData = user[0].stored.map(x => `http://localhost:5000/data/file/${x.dataName}`)
+        const userData = user[0].stored
 
         res.send({
             "userData": userData.length > 0 ? userData : "Your cloud storage is empty!"
@@ -69,14 +69,31 @@ router.get("/file/:filename", async (req, res) => {
         })
 
         const userData = user[0].stored.map(x => `/file/${x.dataName}`)
-        if(!userData.includes(req.path))
+        if (!userData.includes(req.path))
             res.status(403).send("No such file was found!")
-            
+
         const filePath = path.join(__dirname, "../../uploads", req.params.filename.trim())
         console.log("Looking for: " + filePath)
         res.sendFile(filePath);
 
-    } catch(e) {
+    } catch (e) {
+        console.log(e.message)
+        res.status(500).send(e.message)
+    }
+})
+
+router.get("/delete/:fileid", async (req, res) => {
+    try {
+        const deletedFile = await prisma.storeddata.delete({
+            where: {
+                userId: req.userId,
+                id: Number(req.params.fileid)
+            }
+        })
+        console.log(deletedFile)
+        res.status(200).send("Deletion success")
+
+    } catch (e) {
         console.log(e.message)
         res.status(500).send(e.message)
     }
