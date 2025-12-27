@@ -54,19 +54,19 @@ function UploadPage() {
         }
 
         // ask the user to choose how strong the encryption should be (default 256 bit)
-        let strength = Number(prompt("Encryption strength (128 / 256 / 512 / 1024)", "256")) || 256;
-        if (![128, 256, 512, 1024].includes(strength)) {
+        let strength = Number(prompt("Encryption strength (128 / 192 / 256)", "256")) || 256;
+        if (![128, 192, 256].includes(strength)) {
             setStatus("Invalid encryption strength.");
             strength = 256;
         }
         // generate a random starting point
-        const maxPos = pool.length - strength;
+        const maxPos = pool.length - (strength/8);
         const randomVal = new Uint32Array(1);
         window.crypto.getRandomValues(randomVal);
         const keyPos = randomVal[0] % maxPos;
 
         // extract the key from that starting point
-        const rawKey = pool.slice(keyPos, keyPos + strength);
+        const rawKey = pool.slice(keyPos, keyPos + (strength/8));
 
         const cryptoKey = await window.crypto.subtle.importKey(
             "raw",

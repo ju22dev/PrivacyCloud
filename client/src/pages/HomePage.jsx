@@ -10,21 +10,120 @@ function HomePage() {
     const [fileIds, setFileIds] = useState([]);
     const [open, setOpen] = useState({});
 
-    // FIXME: temp solution
     async function handleOpenFile(link) {
         try {
             const token = localStorage.getItem("token");
-            window.open(`${link}?token=${token}`, "_blank");
+            const response = await fetch(`${link}?token=${token}`);
+
+            if (!response.ok) {
+                throw new Error("Failed to fetch file from server");
+            }
+
+            const encryptedBlob = await response.blob();
+
+            const result = await fileDecrypt(encryptedBlob);
+
+            if (!result.success) {
+                throw new Error(`Decryption failed: ${result.error}`);
+            }
+
+            const filename = link.split('/').pop().replace('.enc', '');
+
+            // Create a download link for the decrypted file
+            const url = URL.createObjectURL(result.blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
 
         } catch (e) {
-            window.alert(e.message)
+            window.alert(e.message);
+        }
+    }
+
+    async function fileDecrypt(encryptedFile) {
+        try {
+            // Read the encrypted file as ArrayBuffer
+            const fileBuffer = await encryptedFile.arrayBuffer();
+            const fileData = new Uint8Array(fileBuffer);
+
+            const headerBytes = fileData.slice(0, 2);
+            const byte1 = headerBytes[0].toString(2).padStart(8, "0");
+            const byte2 = headerBytes[1].toString(2).padStart(8, "0");
+            const fullHeader = byte1 + byte2;
+
+            const strengthBits = fullHeader.slice(4, 6);
+            const indexBits = fullHeader.slice(6, 16);
+
+            let strength;
+            switch (strengthBits) {
+                case "00": strength = 128; break;
+                case "01": strength = 256; break;
+                case "10": strength = 512; break;
+                case "11": strength = 1024; break;
+                default:
+                    throw new Error("Invalid encryption strength in header");
+            }
+
+            const keyPos = parseInt(indexBits, 2);
+
+            // Get pool from localStorage
+            // FIXME : I will add a way for the user to upload the secretpoolkey.txt file.
+            const poolHex = localStorage.getItem("poolHex");
+            if (!poolHex) {
+                throw new Error("No encryption key pool found. Please upload your secretpoolkey.txt file.");
+            }
+
+            const pool = new Uint8Array(poolHex.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
+
+            const rawKey = pool.slice(keyPos, keyPos + (strength / 8));
+
+            // Import the key
+            const cryptoKey = await window.crypto.subtle.importKey(
+                "raw",
+                rawKey,
+                { name: "AES-GCM" },
+                false,
+                ["decrypt"]
+            );
+
+            // Extract IV 
+            const iv = fileData.slice(2, 14);
+
+            // Extract the actual encrypted data 
+            const encryptedData = fileData.slice(14);
+
+            // Decrypt the data
+            const decryptedData = await window.crypto.subtle.decrypt(
+                {
+                    name: "AES-GCM",
+                    iv: iv
+                },
+                cryptoKey,
+                encryptedData
+            );
+
+            // Create a blob with the decrypted data
+            const decryptedBlob = new Blob([decryptedData]);
+
+            return {
+                success: true,
+                blob: decryptedBlob,
+                strength: strength
+            };
+
+        } catch (error) {
+            console.error("Decryption error:", error);
+            return {
+                success: false,
+                error: error.message
+            };
         }
     }
 
     async function handleDeleteFile(fileId) {
         try {
-            // FIXME: there should be an api for delete that takes:
-            //      file id
             const response = await fetch(`http://localhost:5000/data/delete/${fileId}`, {
                 headers: {
                     authorization: localStorage.getItem("token"),
@@ -45,7 +144,7 @@ function HomePage() {
         //FIXME: THE OTHER OPTIONS SHOULD BE AUTOMATICALLY CLOSED WHEN ANOTHER ONE IS OPENED.
     }
 
-    
+
     useEffect(() => {
         async function dataLoader() {
             try {
