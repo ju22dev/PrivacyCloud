@@ -16,6 +16,4 @@ app.get("/", (req, res) => {
 app.use("/auth", authRoutes)
 app.use("/data", authMiddleware, dataRoutes)
 
-app.listen(5000, () => {
-    console.log("Server started on PORT 5000")
-})
+export default app;
