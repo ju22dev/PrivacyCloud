@@ -125,7 +125,7 @@ function UploadPage() {
 
 
         try {
-            const response = await fetch("http://localhost:5000/data/upload", {
+            const response = await fetch(import.meta.env.BACKEND_BASEURL + "/data/upload", {
                 method: "POST",
                 headers: {
                     authorization: localStorage.getItem("token") || "",
@@ -154,7 +154,7 @@ function UploadPage() {
     useEffect(() => {
         async function dataLoader() {
             try {
-                const response = await fetch("http://localhost:5000/data/download", {
+                const response = await fetch(import.meta.env.BACKEND_BASEURL + "/data/download", {
                     headers: {
                         authorization: localStorage.getItem("token"),
                     },

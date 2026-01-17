@@ -124,7 +124,7 @@ function HomePage() {
 
     async function handleDeleteFile(fileId) {
         try {
-            const response = await fetch(`http://localhost:5000/data/delete/${fileId}`, {
+            const response = await fetch(import.meta.env.BACKEND_BASEURL + `/data/delete/${fileId}`, {
                 headers: {
                     authorization: localStorage.getItem("token"),
                 },
@@ -148,7 +148,7 @@ function HomePage() {
     useEffect(() => {
         async function dataLoader() {
             try {
-                const response = await fetch("http://localhost:5000/data/download", {
+                const response = await fetch(import.meta.env.BACKEND_BASEURL + "/data/download", {
                     headers: {
                         authorization: localStorage.getItem("token"),
                     },
@@ -172,7 +172,7 @@ function HomePage() {
                 const ids = [];
 
                 userData.forEach((t) => {
-                    downloads.push(`http://localhost:5000/data/file/${t.dataName}`);
+                    downloads.push(import.meta.env.BACKEND_BASEURL + `/data/file/${t.dataName}`);
                     names.push(t.dataName.slice(0, 10) + "\n" + t.dataName.slice(10, 20));
                     ids.push(t.id);
                 });
