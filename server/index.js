@@ -6,11 +6,7 @@ import authRoutes from './src/routes/authRoutes.js'
 
 const app = express()
 
-app.use(cors({
-  origin: "https://privacy-cloud-client.vercel.app/",
-  methods: ["GET", "POST", "PUT", "DELETE","PATCH", "OPTIONS"],
-  credentials: true // allow cookies
-}));
+app.use(cors());
 app.use(express.json());
 
 app.get("/", (req, res) => {
