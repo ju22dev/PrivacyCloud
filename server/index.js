@@ -1,8 +1,8 @@
 import express from 'express'
 import cors from 'cors'
-import authMiddleware from './middlewares/authMiddleware.js'
-import dataRoutes from './routes/dataRoutes.js'
-import authRoutes from './routes/authRoutes.js'
+import authMiddleware from './src/middlewares/authMiddleware.js'
+import dataRoutes from './src/routes/dataRoutes.js'
+import authRoutes from './src/routes/authRoutes.js'
 
 const app = express()
 
