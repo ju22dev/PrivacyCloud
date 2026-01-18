@@ -57,7 +57,7 @@ function AuthPage() {
             let data
             if (isRegistration) {
                 
-                const response = await fetch(import.meta.env.VITE_BACKEND_BASEURL + '/auth/register', {
+                const response = await fetch(import.meta.env.VITE_BACKEND_BASEURL + '/auth/signup', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email: emailVal, password: passVal })
