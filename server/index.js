@@ -7,6 +7,7 @@ import authRoutes from './src/routes/authRoutes.js'
 const app = express()
 
 app.use(cors());
+app.options("*", cors());
 app.use(express.json());
 
 app.get("/", (req, res) => {
