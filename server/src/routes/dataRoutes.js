@@ -74,6 +74,11 @@ router.get("/file/:filename", async (req, res) => {
 
         const filePath = path.join(__dirname, "../../uploads", req.params.filename.trim())
         console.log("Looking for: " + filePath)
+        res.setHeader("Content-Type", "application/octet-stream");
+        res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
+        res.setHeader("Pragma", "no-cache");
+        res.setHeader("Expires", "0");
+        res.setHeader("Surrogate-Control", "no-store");
         res.sendFile(filePath);
 
     } catch (e) {
