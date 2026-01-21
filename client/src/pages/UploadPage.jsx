@@ -22,7 +22,7 @@ function UploadPage() {
         let poolHex = localStorage.getItem("poolHex");
         let pool;
 
-        if (!poolHex) {
+        if (poolHex === null) {
             // Generate new pool: 1 kilobit = 1024 bits = 128 bytes
             pool = new Uint8Array(128);
             window.crypto.getRandomValues(pool);

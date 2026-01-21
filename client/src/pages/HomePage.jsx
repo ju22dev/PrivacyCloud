@@ -151,6 +151,9 @@ function HomePage() {
                 const response = await fetch(import.meta.env.VITE_BACKEND_BASEURL + "/data/download", {
                     headers: {
                         authorization: localStorage.getItem("token"),
+                        "ngrok-skip-browser-warning": true,
+                        "Accept": "application/json"
+
                     },
                 });
                 //
