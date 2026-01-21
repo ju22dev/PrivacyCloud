@@ -70,10 +70,9 @@ function HomePage() {
             let strength;
             switch (strengthBits) {
                 case "00": strength = 128; break;
-                case "01": strength = 192; break;
-                case "10": strength = 256; break;
+                case "01": strength = 256; break;
                 default:
-                    throw new Error("Invalid encryption strength in header");
+                    throw new Error("Invalid encryption strength in header "+ strength);
             }
 
             const keyPos = parseInt(indexBits, 2);

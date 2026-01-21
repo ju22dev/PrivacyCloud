@@ -54,8 +54,8 @@ function UploadPage() {
         }
 
         // ask the user to choose how strong the encryption should be (default 256 bit)
-        let strength = Number(prompt("Encryption strength (128 / 192 / 256)", "256")) || 256;
-        if (![128, 192, 256].includes(strength)) {
+        let strength = Number(prompt("Encryption strength (128 / 256)", "256")) || 256;
+        if (![128, 256].includes(strength)) {
             setStatus("Invalid encryption strength. Default strength 256 selected.");
             strength = 256;
         }
@@ -99,8 +99,7 @@ function UploadPage() {
         let strengthBits;
         switch (strength) {
             case 128: strengthBits = "00"; break;
-            case 192: strengthBits = "01"; break;
-            case 256: strengthBits = "10"; break;
+            case 256: strengthBits = "01"; break;
             default:
                 setStatus("Unsupported key strength.");
                 return;
