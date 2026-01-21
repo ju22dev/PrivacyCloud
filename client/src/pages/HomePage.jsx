@@ -15,9 +15,8 @@ function HomePage() {
         if (!file) return;
 
         const text = await file.text();
-        const poolHex = text.trim();
 
-        localStorage.setItem("poolHex", poolHex);
+        localStorage.setItem("poolHex", text);
         alert("Secret pool key imported successfully!");
     }
 
@@ -71,9 +70,8 @@ function HomePage() {
             let strength;
             switch (strengthBits) {
                 case "00": strength = 128; break;
-                case "01": strength = 256; break;
-                case "10": strength = 512; break;
-                case "11": strength = 1024; break;
+                case "01": strength = 192; break;
+                case "10": strength = 256; break;
                 default:
                     throw new Error("Invalid encryption strength in header");
             }
@@ -81,7 +79,6 @@ function HomePage() {
             const keyPos = parseInt(indexBits, 2);
 
             // Get pool from localStorage
-            // FIXME : I will add a way for the user to upload the secretpoolkey.txt file.
             const poolHex = localStorage.getItem("poolHex");
             if (!poolHex) {
                 throw new Error("No encryption key pool found. Please upload your secretpoolkey.txt file.");
