@@ -65,7 +65,9 @@ function HomePage() {
             const fullHeader = byte1 + byte2;
 
             const strengthBits = fullHeader.slice(4, 6);
+            console.log(strengthBits)
             const indexBits = fullHeader.slice(6, 16);
+            console.log(indexBits)
             console.log(
                 "FIRST 16 BYTES:",
                 Array.from(fileData.slice(0, 16))
