@@ -10,6 +10,18 @@ function HomePage() {
     const [fileIds, setFileIds] = useState([]);
     const [open, setOpen] = useState({});
 
+    async function handleKeyImport(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const text = await file.text();
+        const poolHex = text.trim();
+
+        localStorage.setItem("poolHex", poolHex);
+        alert("Secret pool key imported successfully!");
+    }
+
+
     async function handleOpenFile(link) {
         try {
             const token = localStorage.getItem("token");
@@ -190,6 +202,7 @@ function HomePage() {
         }
 
         dataLoader();
+
     }, []);
 
     return (
@@ -233,6 +246,17 @@ function HomePage() {
             </div>
 
             <button onClick={() => navigate("/upload")}>+ Upload</button>
+            <div>
+                <label>
+                    Import secret key:
+                    <input
+                        type="file"
+                        accept=".txt"
+                        onChange={handleKeyImport}
+                    />
+                </label>
+            </div>
+
         </div>
     );
 }
