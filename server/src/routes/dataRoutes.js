@@ -1,12 +1,7 @@
 import express from 'express'
 import prisma from '../prismaClient.js'
 import multer from 'multer'
-import path from 'path'
-import { fileURLToPath } from 'url';
 import supabase from '../supabaseClient.js'
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 const upload = multer({ storage: multer.memoryStorage() })
 
@@ -68,18 +63,24 @@ router.get("/file/:filename", async (req, res) => {
             where: { id: req.userId }
         })
 
-        const userData = user[0].stored.map(x => `/file/${x.dataName}`)
-        if (!userData.includes(req.path))
-            res.status(403).send("No such file was found!")
+        const allowedFiles = user[0].stored.map(x => x.dataName)
+        const filename = req.params.filename.trim()
 
-        const filePath = path.join(__dirname, "../../uploads", req.params.filename.trim())
-        console.log("Looking for: " + filePath)
-        res.setHeader("Content-Type", "application/octet-stream");
-        res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate");
-        res.setHeader("Pragma", "no-cache");
-        res.setHeader("Expires", "0");
-        res.setHeader("Surrogate-Control", "no-store");
-        res.sendFile(filePath);
+        if (!allowedFiles.includes(filename)) {
+            return res.status(403).send("No such file was found!")
+        }
+
+        const { data, error } = await supabase.storage
+            .from('uploads')
+            .download(`${req.userId}/${filename}`)
+
+        if (error) throw error
+
+        res.setHeader("Content-Type", "application/octet-stream")
+        res.setHeader("Cache-Control", "no-store")
+
+        const buffer = Buffer.from(await data.arrayBuffer())
+        res.send(buffer)
 
     } catch (e) {
         console.log(e.message)
@@ -87,15 +88,30 @@ router.get("/file/:filename", async (req, res) => {
     }
 })
 
+
 router.get("/delete/:fileid", async (req, res) => {
     try {
-        const deletedFile = await prisma.storeddata.delete({
+        const file = await prisma.storeddata.findFirst({
             where: {
-                userId: req.userId,
-                id: Number(req.params.fileid)
+                id: Number(req.params.fileid),
+                userId: req.userId
             }
         })
-        console.log(deletedFile)
+
+        if (!file) {
+            return res.status(404).send("File not found")
+        }
+
+        const { error } = await supabase.storage
+            .from('uploads')
+            .remove([`${req.userId}/${file.dataName}`])
+
+        if (error) throw error
+
+        await prisma.storeddata.delete({
+            where: { id: file.id }
+        })
+
         res.status(200).send("Deletion success")
 
     } catch (e) {
@@ -103,5 +119,6 @@ router.get("/delete/:fileid", async (req, res) => {
         res.status(500).send(e.message)
     }
 })
+
 
 export default router;
