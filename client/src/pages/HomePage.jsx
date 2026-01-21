@@ -152,7 +152,6 @@ function HomePage() {
                     headers: {
                         authorization: localStorage.getItem("token"),
                         "ngrok-skip-browser-warning": true,
-                        "Accept": "application/json"
 
                     },
                 });
