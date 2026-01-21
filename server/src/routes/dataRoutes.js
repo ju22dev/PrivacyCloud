@@ -3,36 +3,34 @@ import prisma from '../prismaClient.js'
 import multer from 'multer'
 import path from 'path'
 import { fileURLToPath } from 'url';
+import supabase from '../supabaseClient.js'
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, './uploads')
-    },
-    filename: function (req, file, cb) {
-        cb(null, file.originalname)
-    }
-})
-
-const upload = multer({ storage: storage })
+const upload = multer({ storage: multer.memoryStorage() })
 
 const router = express.Router()
 
 router.post("/upload", upload.single('file'), async (req, res) => {
     try {
-        const dataName = req.file.originalname;
+        const dataName = req.file.originalname
         const userId = req.userId
-        console.log(dataName + " uploaded successfully!")
+
+        const { error } = await supabase.storage
+            .from('uploads')
+            .upload(`${userId}/${dataName}`, req.file.buffer, {
+                contentType: req.file.mimetype,
+                upsert: false
+            })
+
+        if (error) throw error
 
         await prisma.storeddata.create({
             data: {
                 dataName: dataName.trim(),
                 user: {
-                    connect: {
-                        id: userId
-                    }
+                    connect: { id: userId }
                 }
             }
         })
@@ -40,8 +38,10 @@ router.post("/upload", upload.single('file'), async (req, res) => {
         res.send(dataName + " uploaded successfully!")
     } catch (e) {
         console.log(e.message)
+        res.status(500).send(e.message)
     }
-});
+})
+
 
 router.get("/download", async (req, res) => {
     try {
