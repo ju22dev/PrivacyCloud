@@ -66,13 +66,17 @@ function HomePage() {
 
             const strengthBits = fullHeader.slice(4, 6);
             const indexBits = fullHeader.slice(6, 16);
+            console.log(
+                "FIRST 16 BYTES:",
+                Array.from(fileData.slice(0, 16))
+            );
 
             let strength;
             switch (strengthBits) {
                 case "00": strength = 128; break;
                 case "01": strength = 256; break;
                 default:
-                    throw new Error("Invalid encryption strength in header "+ strength);
+                    throw new Error("Invalid encryption strength in header " + strength);
             }
 
             const keyPos = parseInt(indexBits, 2);
