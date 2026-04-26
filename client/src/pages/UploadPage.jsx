@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
+import styles from '../styles/UploadPage.module.css'
 
 function UploadPage() {
     const navigate = useNavigate();
@@ -7,6 +8,11 @@ function UploadPage() {
     const [status, setStatus] = useState("");
     const [file, setFile] = useState(null);
     const homeButtonText = "<< Home"
+
+    function logout() {
+        localStorage.removeItem("token");
+        navigate("/");
+    }
 
     async function fileSubmit(e) {
         e.preventDefault();
@@ -32,7 +38,7 @@ function UploadPage() {
             pool.forEach((val) => {
                 poolHex += val.toString(16).padStart(2, "0");
             });
-            
+
             // Save to localStorage
             localStorage.setItem("poolHex", poolHex);
 
@@ -60,13 +66,13 @@ function UploadPage() {
             strength = 256;
         }
         // generate a random starting point
-        const maxPos = pool.length - (strength/8);
+        const maxPos = pool.length - (strength / 8);
         const randomVal = new Uint32Array(1);
         window.crypto.getRandomValues(randomVal);
         const keyPos = randomVal[0] % maxPos;
 
         // extract the key from that starting point
-        const rawKey = pool.slice(keyPos, keyPos + (strength/8));
+        const rawKey = pool.slice(keyPos, keyPos + (strength / 8));
 
         const cryptoKey = await window.crypto.subtle.importKey(
             "raw",
@@ -176,22 +182,41 @@ function UploadPage() {
         dataLoader();
     }, [])
     return (
-
-        <div>
-            <div>
-                <button onClick={() => navigate("/home")}>
-                    {homeButtonText}
+        <>
+            <div className={styles.topBar}>
+                <h2 className={styles.logo}>Privacy Cloud</h2>
+                <button onClick={logout} className={styles.logoutBtn}>
+                    Log out
                 </button>
             </div>
-            <form onSubmit={fileSubmit}>
-                <h2>Upload a File</h2>
-                <input type="file" onChange={(e) => setFile(e.target.files[0])} required />
-                <br />
-                <button type="submit">Upload</button>
-                {status && <p>{status}</p>}
-            </form>
-        </div>
-    )
+
+            <div className={styles.page}>
+                <button
+                    className={styles.backButton}
+                    onClick={() => navigate("/home")}
+                >
+                    {homeButtonText}
+                </button>
+
+                <form onSubmit={fileSubmit} className={styles.uploadCard}>
+                    <h2 className={styles.title}>Upload a File</h2>
+
+                    <input
+                        className={styles.fileInput}
+                        type="file"
+                        onChange={(e) => setFile(e.target.files[0])}
+                        required
+                    />
+
+                    <button type="submit" className={styles.uploadBtn}>
+                        Upload
+                    </button>
+
+                    {status && <p className={styles.status}>{status}</p>}
+                </form>
+            </div>
+        </>
+    );
 }
 
 export default UploadPage

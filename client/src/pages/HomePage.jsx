@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import styles from "../styles/HomePage.module.css"
 
 function HomePage() {
     const navigate = useNavigate();
@@ -9,6 +10,11 @@ function HomePage() {
     const [fileName, setFileName] = useState([]);
     const [fileIds, setFileIds] = useState([]);
     const [open, setOpen] = useState({});
+
+    function logout() {
+        localStorage.removeItem("token");
+        navigate("/");
+    }
 
     async function handleKeyImport(e) {
         const file = e.target.files[0];
@@ -208,58 +214,72 @@ function HomePage() {
     }, []);
 
     return (
-        <div>
-            <h1>HomePage</h1>
+        <>
+            <div className={styles.topBar}>
+                <h2 className={styles.logo}>Privacy Cloud</h2>
+                <button onClick={logout} className={styles.logoutBtn}>
+                    Log out
+                </button>
+            </div>
+            <div className={styles.page}>
+                <h1 className={styles.heading}>Home</h1>
 
-            {errorMessage && <h2>{errorMessage}</h2>}
+                {errorMessage && <h2 className={styles.errorMessage}>{errorMessage}</h2>}
 
-            <div className="filesContainer">
-                {downloadLinks.map((link, i) => (
-                    <li
-                        key={i}
-                        className="fileElement"
-                        onClick={() => handleOpenFile(link)}
-                    >
-                        <img src="/icons8-file.svg" alt="" />
+                <div className={styles.filesContainer}>
+                    {downloadLinks.map((link, i) => (
+                        <li
+                            key={i}
+                            className={styles.fileElement}
+                            onClick={() => handleOpenFile(link)}
+                        >
+                            <img className={styles.fileIcon} src="/icons8-file.svg" alt="" />
 
-                        <div className="fileDescription">
-                            <p>{fileName[i]}</p>
-                            <div
-                                className="three-dots"
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    changeOptionVisibility(i);
-                                }}
-                            >
-                                <img src="./three-dots.svg" alt="" />
-                                {open[i] && (
-                                    <div className="drop-down-options">
-                                        <ul>
-                                            <li onClick={() => handleDeleteFile(fileIds[i])}>Delete</li>
-                                            <li>Nothing</li>
-                                        </ul>
+                            <div className={styles.fileDescription}>
+                                <p>{fileName[i]}</p>
+                                <div
+                                    className={styles.threeDots}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        changeOptionVisibility(i);
+                                    }}
+                                >
+                                    <img src="./three-dots.svg" alt="" />
 
-                                    </div>
-                                )}
+                                    {open[i] && (
+                                        <div className={styles.dropDownOptions}>
+                                            <button
+                                                className={styles.dropdownItem}
+                                                onClick={() => handleDeleteFile(fileIds[i])}
+                                            >
+                                                Delete
+                                            </button>
+
+                                            <button className={styles.dropdownItem}>
+                                                Nothing
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
-                        </div>
-                    </li>
-                ))}
-            </div>
+                        </li>
+                    ))}
+                </div>
 
-            <button onClick={() => navigate("/upload")}>+ Upload</button>
-            <div>
-                <label>
-                    Import secret key:
-                    <input
-                        type="file"
-                        accept=".txt"
-                        onChange={handleKeyImport}
-                    />
-                </label>
-            </div>
+                <button className={styles.uploadButton} onClick={() => navigate("/upload")}>+ Upload</button>
 
-        </div>
+                <div className={styles.keyImportSection}>
+                    <label>
+                        Import secret key:
+                        <input
+                            type="file"
+                            accept=".txt"
+                            onChange={handleKeyImport}
+                        />
+                    </label>
+                </div>
+            </div>
+        </>
     );
 }
 

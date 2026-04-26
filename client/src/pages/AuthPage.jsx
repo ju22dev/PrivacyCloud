@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from "react-router-dom";
+import styles from '../styles/AuthPage.module.css'
 
 function AuthPage() {
     const navigate = useNavigate();
@@ -9,10 +10,10 @@ function AuthPage() {
     const [isAuthenticating, setIsAuthenticating] = useState(false);
     const [isRegistration, setIsRegistration] = useState(false);
 
-    const [registerBtn, setRegisterBtn] = useState('Sign up')
-    const [headerTxt, setHeaderTxt] = useState('Log In')
-    const [registerQuestionTxt, setRegisterQuestionTxt] = useState('Don\'t have an account?')
     const [authBtn, setAuthBtn] = useState('Submit')
+    const headerTxt = isRegistration ? 'Sign Up' : 'Log In';
+    const registerQuestionTxt = isRegistration ? 'Already have an account?' : "Don't have an account?";
+    const registerBtn = isRegistration ? 'Sign In' : 'Sign Up';
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -23,12 +24,8 @@ function AuthPage() {
 
     // AUTH LOGIC
 
-    async function toggleIsRegister() {
-        setIsRegistration(prev => !prev)
-
-        setRegisterBtn(prev => (prev === 'Sign in' ? 'Sign up' : 'Sign in'));
-        setHeaderTxt(prev => (prev === 'Log In' ? 'Sign up' : 'Log In'));
-        setRegisterQuestionTxt(prev => (prev === 'Don\'t have an account?' ? 'Already have an account?' : 'Don\'t have an account?'));
+    function toggleIsRegister() {
+        setIsRegistration(prev => !prev);
     }
 
     async function authenticate() {
@@ -56,7 +53,7 @@ function AuthPage() {
         try {
             let data
             if (isRegistration) {
-                
+
                 const response = await fetch(import.meta.env.VITE_BACKEND_BASEURL + '/auth/signup', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -81,7 +78,7 @@ function AuthPage() {
                 setAuthBtn('Loading...')
 
                 navigate("/home")
-                
+
             } else {
                 throw Error('❌ Failed to authenticate...')
             }
@@ -105,35 +102,39 @@ function AuthPage() {
 
     return (
         <>
-            <section id="auth">
+            <div className={styles.topBar}>
+                <h2 className={styles.logo}>Privacy Cloud</h2>
+            </div>
+            <form id={styles.auth} onSubmit={(e) => { e.preventDefault(); authenticate(); }}>
                 <div>
-                    <h2 className="sign-up-text">{headerTxt}</h2>
+                    <h2 className={styles["sign-up-text"]}>{headerTxt}</h2>
                     <p></p>
                 </div>
 
-                <p id="error" >{error}</p>
-                <input id="emailInput" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
-                <input id="passwordInput" placeholder="********" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-                <button id="authBtn" onClick={() => authenticate()}>
+                <p id={styles.error} >{error}</p>
+
+                <input id={styles.emailInput} placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                <input id={styles.passwordInput} placeholder="********" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+                <button id={styles.authBtn} type="submit">
                     {authBtn}
                 </button>
                 <hr />
-                <div className="register-content">
+                <div className={styles["register-content"]}>
                     <p>{registerQuestionTxt}</p>
-                    <button onClick={() => toggleIsRegister()} id="registerBtn">{registerBtn}</button>
+                    <button onClick={toggleIsRegister} id={styles.registerBtn} type="button">{registerBtn}</button>
                 </div>
-            </section>
+            </form>
             <header style={{ display: 'none' }}>
-                <h1 className="text-gradient">You have 0 open tasks.</h1>
+                <h1 className={styles['text-gradient']}>You have 0 open tasks.</h1>
             </header>
-            <nav style={{ display: 'none' }} className="tab-container">
-                <button onClick={() => changeTab('All')} className="tab-button  selected-tab">
+            <nav style={{ display: 'none' }} className={styles['tab-container']}>
+                <button onClick={() => changeTab('All')} className={[styles['tab-button'], styles['selected-tab']].join(' ')}>
                     <h4>All <span>(0)</span></h4>
                 </button>
-                <button onClick={() => changeTab('Open')} className="tab-button  ">
+                <button onClick={() => changeTab('Open')} className={styles['tab-button']}>
                     <h4>Open <span>(0)</span></h4>
                 </button>
-                <button onClick={() => changeTab('Complete')} className="tab-button  ">
+                <button onClick={() => changeTab('Complete')} className={styles['tab-button']}>
                     <h4>Complete <span>(0)</span></h4>
                 </button>
                 <hr />

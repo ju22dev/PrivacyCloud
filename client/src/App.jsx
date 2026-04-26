@@ -25,12 +25,6 @@ const router = createBrowserRouter(
 )
 
 function App() {
-    /*
-        FIXME: How to check if the user was already logged in...
-            - so the index request directly goes to /home
-            - maybe use useEffect(... , [])
-            - auth check should be done inside the <LandingPage />
-    */
     return (<RouterProvider router={router} />)
 
 }
